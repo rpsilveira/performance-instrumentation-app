@@ -31,7 +31,24 @@ client.connect().then(() => console.log('Redis Conectado'));
 const REDISCACHEKEY = 'get-api';
 
 const bunyan = require('bunyan');
-const log = bunyan.createLogger({ name: 'app2' });
+const bunyantcp = require('bunyan-logstash-tcp');
+const logstashHost = process.env.LOGSTASH_HOST || 'localhost';
+const logstashPort = process.env.LOGSTASH_PORT || 5000;
+const log = bunyan.createLogger({ 
+  name: 'app2',
+  streams: [
+    {
+      stream: process.stdout
+    },
+    {
+      type: "raw",
+      stream: bunyantcp.createStream({
+          host: logstashHost,
+          port: logstashPort
+      })
+    }
+  ]
+});
 
 app.use((req, res, next) => {
   const logRequest = {
