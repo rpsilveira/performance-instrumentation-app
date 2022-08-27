@@ -17,7 +17,7 @@ const breaker = new CircuitBreaker(requestRetry, circuitBreakerOptions);
 breaker.on('open', () => console.log(`OPEN: The breaker`));
 breaker.on('halfOpen', () => console.log(`HALF_OPEN: The breaker`));
 breaker.on('close', () => console.log(`CLOSE: The breaker`));
-breaker.fallback(requestFallbackRedis); // MODIFIED CODE
+breaker.fallback(requestFallbackRedis);
 
 const redis = require("redis");
 const redisHost = process.env.REDIS_HOST || 'localhost';
@@ -29,6 +29,32 @@ const client = redis.createClient({
 client.on('error', (err) => console.log('Redis Client Error', err));
 client.connect().then(() => console.log('Redis Conectado'));
 const REDISCACHEKEY = 'get-api';
+
+const bunyan = require('bunyan');
+const log = bunyan.createLogger({ name: 'app2' });
+
+app.use((req, res, next) => {
+  const logRequest = {
+    method: req.method,
+    url: req.url,
+    headers: JSON.stringify(req.headers),
+    params: JSON.stringify(req.params),
+    query: JSON.stringify(req.query),
+    body: JSON.stringify(req.body)
+  }
+
+  const logResponse = {
+    headers: JSON.stringify(res.getHeaders()),
+    statusCode: res.statusCode
+  }
+
+  log.info({ 
+    req: logRequest,
+    res: logResponse
+  });
+  next();
+  
+});
 
 async function requestFallbackRedis () {
   console.info('Fallback Executado');
