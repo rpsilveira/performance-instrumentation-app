@@ -1,3 +1,4 @@
+require('newrelic');
 const express = require('express');
 const requestPromise = require('request-promise');
 const app = express();
