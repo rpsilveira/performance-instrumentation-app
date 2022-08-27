@@ -11,7 +11,7 @@ services:
       - "3001:3000"
     environment:
       PORT: 3000
-      IS_RETURN_200: 1 ## NEW CODE
+      IS_RETURN_200: 1
     networks:
       - app-network
   
@@ -25,7 +25,7 @@ services:
       - "3002:3000"
     environment:
       PORT: 3000
-      IS_RETURN_200: 0 ## NEW CODE
+      IS_RETURN_200: 0
     networks:
       - app-network
   
@@ -42,7 +42,14 @@ services:
     networks:
       - app-network
   
-  ## START NEW CODE
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+  
   app2_instancia1:
     build:
       context: .
@@ -54,11 +61,13 @@ services:
     environment:
       PORT: 3000
       NGINX_URL: "http://nginx:80"
+      REDIS_HOST: "redis" # NEW CODE
+      REDIS_PORT: "6379" # NEW CODE
     depends_on:
       - nginx
+      - redis
     networks:
       - app-network
-  ## END NEW CODE
 
 networks:
   app-network:

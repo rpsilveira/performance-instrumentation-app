@@ -13,6 +13,7 @@
     "express": "^4.18.1",
     "got": "^11.8.5",
     "opossum": "^6.4.0",
+    "redis": "^4.3.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"
   }
